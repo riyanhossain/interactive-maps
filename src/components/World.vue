@@ -2071,8 +2071,8 @@
 import { onMounted } from 'vue'
 
 onMounted(() => {
-  // Generic function to create country hover effects
-  const createCountryHoverEffect = (countrySelector: string, hoverColor: string, initialColor: string = 'black') => {
+  // Generic function to create country hover effects and navigation
+  const createCountryHoverEffect = (countrySelector: string, hoverColor: string, initialColor: string = 'black', navigationPath?: string) => {
     const countryPaths = document.querySelectorAll(countrySelector) as NodeListOf<SVGPathElement>
     
     // Set initial color
@@ -2092,10 +2092,19 @@ onMounted(() => {
       })
     }
     
+    const handleClick = () => {
+      if (navigationPath) {
+        window.location.href = navigationPath
+      }
+    }
+    
     // Add event listeners to all country paths
     countryPaths.forEach(path => {
       path.addEventListener('mouseenter', handleMouseEnter)
       path.addEventListener('mouseleave', handleMouseLeave)
+      if (navigationPath) {
+        path.addEventListener('click', handleClick)
+      }
     })
     
     // Return cleanup function
@@ -2103,14 +2112,17 @@ onMounted(() => {
       countryPaths.forEach(path => {
         path.removeEventListener('mouseenter', handleMouseEnter)
         path.removeEventListener('mouseleave', handleMouseLeave)
+        if (navigationPath) {
+          path.removeEventListener('click', handleClick)
+        }
       })
     }
   }
   
-  // Create hover effects for different countries
+  // Create hover effects for different countries with navigation
   // For "United States" class, we need to select elements that have both "United" AND "States" classes
-  const cleanupUS = createCountryHoverEffect('path.United.States', 'black', 'rgb(59 130 246)') // hover: black, initial: blue-500
-  const cleanupCanada = createCountryHoverEffect('path.Canada', 'black', 'rgb(168 85 247)') // hover: black, initial: purple-500
+  const cleanupUS = createCountryHoverEffect('path.United.States', 'black', 'rgb(59 130 246)', '/usa') // hover: black, initial: blue-500, navigate to /usa
+  const cleanupCanada = createCountryHoverEffect('path.Canada', 'black', 'rgb(168 85 247)', '/canada') // hover: black, initial: purple-500, navigate to /canada
   
   // Cleanup on unmount
   return () => {
